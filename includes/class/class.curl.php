@@ -32,7 +32,7 @@ class mycurl {
 		$this->_cookieFileLocation = dirname(__FILE__).'/cookie.txt';
 		//$this->setSSL(DIR_FS_CATALOG . 'includes/cacert.pem');
 	}
-	
+
 	public function setSSL($n){
 		$this->_ssl = $n;
 	}
@@ -62,88 +62,49 @@ class mycurl {
 	public function setUserAgent($userAgent){
 		$this->_useragent = $userAgent;
 	}
-	public function createCurl($url = 'nul', $type = 'curl'){
-		if($url != 'nul'){
+	public function createCurl($url = 'nul'){
+		if($url !== 'nul'){
 			$this->_url = $url;
 		}
 
-		if($type === 'curl'){
-
-			$s = curl_init();
-			curl_setopt($s,CURLOPT_URL,$this->_url);
-			curl_setopt($s,CURLOPT_HTTPHEADER,array('Expect:'));
-			curl_setopt($s,CURLOPT_TIMEOUT,$this->_timeout);
-			curl_setopt($s,CURLOPT_MAXREDIRS,$this->_maxRedirects);
-			curl_setopt($s,CURLOPT_RETURNTRANSFER,true);
-			curl_setopt($s,CURLOPT_FOLLOWLOCATION,$this->_followlocation);
-			curl_setopt($s,CURLOPT_COOKIEJAR,$this->_cookieFileLocation);
-			curl_setopt($s,CURLOPT_COOKIEFILE,$this->_cookieFileLocation);
-			if($this->authentication == 1){
-				curl_setopt($s, CURLOPT_USERPWD, $this->auth_name.':'.$this->auth_pass);
-			}
-			if($this->_post){
-				curl_setopt($s,CURLOPT_POST,true);
-				curl_setopt($s,CURLOPT_POSTFIELDS,$this->_postFields);
-			}
-			if($this->_includeHeader){
-			 curl_setopt($s,CURLOPT_HEADER,true);
-			}
-			if($this->_noBody){
-				curl_setopt($s,CURLOPT_NOBODY,true);
-			}
-			if($this->_ssl){
-				curl_setopt($s, CURLOPT_SSL_VERIFYPEER, 1);
-				curl_setopt($s, CURLOPT_SSL_VERIFYHOST, 2);
-				curl_setopt($s, CURLOPT_CAINFO, $this->_ssl);
-			}else{
-				curl_setopt($s, CURLOPT_SSL_VERIFYPEER, false);
-			}
-			curl_setopt($s,CURLOPT_USERAGENT,$this->_useragent);
-			curl_setopt($s,CURLOPT_REFERER,$this->_referer);
-			$retorno = curl_exec($s);
-			$this->_webpage = $this->limparHtml($retorno);
-
-			$this->_status = curl_getinfo($s,CURLINFO_HTTP_CODE);
-			curl_close($s);
-
-		}else{ //file get contents;
-			$opts = array('http' =>
-		    array(
-	        'method'  => 'GET',
-	        'header'  => 'Content-type: application/x-www-form-urlencoded'
-		    )
-			);
-			$context = stream_context_create($opts);
-
-			$dados = file_get_contents($this->_url, true, $context);
-			//dump($dados);
-			//Vamos buscar a url na tag canonical para ter certeza que a url do produto ainda existe.
-			$procura = '/"'.str_replace('/','\/',$this->_url).'"/';
-			//dump($procura);
-
-			$tagCanonical = '<link rel="canonical"';
-			$canonical = explode($tagCanonical,$dados);
-			$canonical = explode('">',$canonical[1]);
-			//dump($canonical[0]);
-			//monta uma tag de comparação
-			//colocar tudo minusculo para previnir de mudança de "case sensitive" na URL
-			$tagMontada = mb_strtolower(trim($tagCanonical).' '. 'href="'.$this->_url.'"'.'>');
-			//dump($tagMontada);
-			//tag de comparação vinda do HTML do fornecedor
-			//colocar tudo minusculo para previnir de mudança de "case sensitive" na URL
-			$tagHtml = mb_strtolower(trim($tagCanonical).' '.trim($canonical[0]).'">');
-			//dump($tagHtml);
-
-			if(preg_match($procura, $dados)){
-				$this->_webpage = $this->limparHtml($dados);
-			}else if($tagHtml === $tagMontada){
-				$this->_webpage = $this->limparHtml($dados);
-			}else{
-				dump("Houve redirecionamento de URL.");
-				dump("Tag Canonica: " . $tagHtml);
-				$this->_webpage = false;
-			}
+		$s = curl_init();
+		curl_setopt($s,CURLOPT_URL,$this->_url);
+		curl_setopt($s,CURLOPT_HTTPHEADER,array('Expect:'));
+		curl_setopt($s,CURLOPT_TIMEOUT,$this->_timeout);
+		curl_setopt($s,CURLOPT_MAXREDIRS,$this->_maxRedirects);
+		curl_setopt($s,CURLOPT_RETURNTRANSFER,true);
+		curl_setopt($s,CURLOPT_FOLLOWLOCATION,$this->_followlocation);
+		curl_setopt($s,CURLOPT_COOKIEJAR,$this->_cookieFileLocation);
+		curl_setopt($s,CURLOPT_COOKIEFILE,$this->_cookieFileLocation);
+		if($this->authentication == 1){
+			curl_setopt($s, CURLOPT_USERPWD, $this->auth_name.':'.$this->auth_pass);
 		}
+		if($this->_post){
+			curl_setopt($s,CURLOPT_POST,true);
+			curl_setopt($s,CURLOPT_POSTFIELDS,$this->_postFields);
+		}
+		if($this->_includeHeader){
+			curl_setopt($s,CURLOPT_HEADER,true);
+		}
+		if($this->_noBody){
+			curl_setopt($s,CURLOPT_NOBODY,true);
+		}
+		if($this->_ssl){
+			curl_setopt($s, CURLOPT_SSL_VERIFYPEER, 1);
+			curl_setopt($s, CURLOPT_SSL_VERIFYHOST, 2);
+			curl_setopt($s, CURLOPT_CAINFO, $this->_ssl);
+		}else{
+			curl_setopt($s, CURLOPT_SSL_VERIFYPEER, false);
+		}
+		curl_setopt($s,CURLOPT_USERAGENT,$this->_useragent);
+		curl_setopt($s,CURLOPT_REFERER,$this->_referer);
+		$retorno = curl_exec($s);
+		$this->_webpage = $this->limparHtml($retorno);
+
+		$this->_status = curl_getinfo($s,CURLINFO_HTTP_CODE);
+		curl_close($s);
+
+		
 	}
 
 	public static function limparHtml($htmlPage){
@@ -243,4 +204,3 @@ class mycurl {
 	  $_useragentRandom = $agentes;
 	}
 }
-?>

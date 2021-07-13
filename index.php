@@ -18,12 +18,5 @@
 	$tokenSet = $bling::getToken();
 	
 	$listaDeComprasBling = $bling::listaDeCompras();
-
+	$listaDeComprasBling = json_decode($listaDeComprasBling)->retorno;
 	dump($listaDeComprasBling);
-
-	dump($tokenSet);
-
-
-
-
-?>

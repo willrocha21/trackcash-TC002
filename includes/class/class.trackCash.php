@@ -35,4 +35,3 @@ class trackCash{
 		return false;		
 	}
 }
-?>
