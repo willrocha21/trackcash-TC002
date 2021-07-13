@@ -59,16 +59,53 @@ class trackCash extends mycurl{
 	protected static function setDados(){
 		// Aqui vamos formatar os dados conforme o scopo da API da TrackCash.
 		// Se não houver dados enviados retorna uma mensagem e retorna false.
-		if(static::$dadosFormatados === false){
+		if(static::$pedidos === false){
 			dump('Sem pedidos enviados para formatação.');
 			return false;
 		}
-		$orders = (object)[
-			'orders' => ''
-		];
+
+		$pedidos = [];
 		foreach (self::getPedidos() as $k => $v) {
-			dump($v);
+			$produtos = [];
+			foreach ($v->pedido->itens as $k => $p){
+				$produtos[] = [
+					'sku' => $p->item->codigo,
+			   	'quantity' => $p->item->quantidade,
+			   	'selling_price' => $p->item->valorunidade,
+			   	'discount' => $p->item->descontoItem
+				];
+			}
+
+			$pedidos[] = [ 
+				'id_order' 			=> $v->pedido->numero,
+				'invoice' 			=> $v->pedido->numeroPedidoLoja,
+				'status' 				=> '2',
+				'date' 					=> $v->pedido->data,
+				'partial_total' => $v->pedido->totalprodutos,
+				'taxes' 				=> '0',
+				'discount' 			=> '0',
+				'type_factor' 	=> 'cubagem',
+				'type_factor_value' => '0.55',
+				'logis_shipping_preview' => '45.00',
+				'shipment' 				=> 'B2W Entregas',
+				'shipment_value' 	=> $v->pedido->valorfrete,
+				'shipment_code' 	=> '',
+				'shipment_date'		=> $v->pedido->dataSaida,
+				'delivered' 			=> '1',
+				'paid' 						=> $v->pedido->totalvenda,
+				'refunded' 				=> '0',
+				'total' 					=> $v->pedido->totalvenda,
+				'products' 				=> $produtos,
+				'point_sale' 			=> '5',
+				'point_sale_code' => $v->pedido->loja
+     	];
+
 		}
+		$orders = [
+			'orders' => $pedidos
+		];		
+    dump($pedidos);
+    dump($orders);
 	}
 
 	private static function setUrlApi($extraParam = false){
