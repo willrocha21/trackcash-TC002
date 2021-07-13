@@ -34,8 +34,9 @@
 			dump($value->erro);
 		}
 	}else{
+		dump($listaDeComprasBling);
 		$trackCash::setPedidos($listaDeComprasBling->pedidos);
 		$pedidos = $trackCash::getPedidos();
-		$trackCash::cadastrarPedidos();
-		dump($pedidos);
+		$insert = $trackCash::cadastrarPedidos();
+		echo $insert;
 	}

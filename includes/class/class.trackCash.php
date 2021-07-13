@@ -7,9 +7,9 @@ class trackCash extends mycurl{
 
 	private static $token = false;
 
-	private static $url 		= 'https://trackcash.com.br/api/';
+	private static $url 			= 'https://trackcash.com.br/api/';
 	private static $urlAPi 		= false;
-	private static $rota	 	= false;
+	private static $rota	 		= false;
 	private static $tipagem		= false;
 	private static $pedidos 	= false;	
 	protected static $dadosFormatados = false;
@@ -41,19 +41,25 @@ class trackCash extends mycurl{
 		
 		// Retorna a URL produzida e salva nesta variável
 		$urlApi = self::getUrlAPi();
-		dump(self::$urlAPi);
 
 		self::setDados();
 
 		// Instancia a classe extendida para consulta via CURL.
-		/*$curl = new mycurl($urlApi);
+		$curl = new mycurl($urlApi);
+		$curl->setHeader([
+			"Content-Type: application/json; charset=utf-8",
+			"token: ".self::getToken('trackCash')."" 
+		]);
+		$curl->setPost(self::getDados());
+		dump($curl);
+
 		$curl->createCurl();
 		if($curl->getHttpStatus() === 200){
 			return $curl->getPagina();
 		}else{
 			dump('Código da consulta: '.$curl->getHttpStatus());
 			return false;
-		}*/
+		}
 	}
 
 	protected static function setDados(){
@@ -104,8 +110,7 @@ class trackCash extends mycurl{
 		$orders = [
 			'orders' => $pedidos
 		];		
-    dump($pedidos);
-    dump($orders);
+		self::$dadosFormatados = json_encode($orders);
 	}
 
 	private static function setUrlApi($extraParam = false){
@@ -121,7 +126,9 @@ class trackCash extends mycurl{
 	public static function setPedidos($pedidos){
 		self::$pedidos = $pedidos;
 	}
-
+	protected static function getDados(){
+		return self::$dadosFormatados;
+	}
 	public static function getPedidos(){
 		return self::$pedidos;
 	}

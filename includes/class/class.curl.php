@@ -12,6 +12,7 @@ class mycurl {
 	protected $_session;
 	protected $_webpage;
 	protected $_includeHeader;
+	protected $_header = false;
 	protected $_noBody;
 	protected $_status;
 	protected $_binaryTransfer;
@@ -62,6 +63,9 @@ class mycurl {
 	public function setUserAgent($userAgent){
 		$this->_useragent = $userAgent;
 	}
+	public function setHeader(array $header){
+		$this->_header = $header;
+	}
 	public function createCurl($url = 'nul'){
 		if($url !== 'nul'){
 			$this->_url = $url;
@@ -69,7 +73,7 @@ class mycurl {
 
 		$s = curl_init();
 		curl_setopt($s,CURLOPT_URL,$this->_url);
-		curl_setopt($s,CURLOPT_HTTPHEADER,array('Expect:'));
+		curl_setopt($s,CURLOPT_HTTPHEADER,($this->_header !== false ? $this->_header : array('Expect:')));
 		curl_setopt($s,CURLOPT_TIMEOUT,$this->_timeout);
 		curl_setopt($s,CURLOPT_MAXREDIRS,$this->_maxRedirects);
 		curl_setopt($s,CURLOPT_RETURNTRANSFER,true);
@@ -80,11 +84,14 @@ class mycurl {
 			curl_setopt($s, CURLOPT_USERPWD, $this->auth_name.':'.$this->auth_pass);
 		}
 		if($this->_post){
-			curl_setopt($s,CURLOPT_POST,true);
+			//curl_setopt($s,CURLOPT_POST,true);
+			curl_setopt($s,CURLOPT_CUSTOMREQUEST,'PUT');
 			curl_setopt($s,CURLOPT_POSTFIELDS,$this->_postFields);
 		}
 		if($this->_includeHeader){
 			curl_setopt($s,CURLOPT_HEADER,true);
+		}else{
+			curl_setopt($s,CURLOPT_HEADER,false);
 		}
 		if($this->_noBody){
 			curl_setopt($s,CURLOPT_NOBODY,true);
@@ -102,9 +109,7 @@ class mycurl {
 		$this->_webpage = $this->limparHtml($retorno);
 
 		$this->_status = curl_getinfo($s,CURLINFO_HTTP_CODE);
-		curl_close($s);
-
-		
+		curl_close($s);		
 	}
 
 	public static function limparHtml($htmlPage){
