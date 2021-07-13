@@ -45,10 +45,15 @@ class Bling extends mycurl{
 	public static function getToken(){
 		return static::$token;
 	}
-	public static function listaDeCompras(){
+	public static function listaDeCompras($dataInicio = false, $dataFim = false){
 		self::setTipagem('json'); // Formato do retorno dos dados consultados
 		self::setRota('pedidos'); // Rota para url de consulta da Bling APi
-		self::setUrlAPi('&apikey=' . self::getToken()); // Seta na URL o Token
+		
+		$dataString = '';
+		if($dataInicio !== false){
+			$dataString = '&filters=dataEmissao['.$dataInicio.' TO '.$dataFim.']';
+		}
+		self::setUrlAPi('&apikey=' . self::getToken().$dataString); // Seta na URL o Token
 
 		// Retorna a URL produzida e salva nesta variável
 		$urlApi = self::getUrlAPi();
