@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 
 **/
@@ -11,13 +10,16 @@ class Bling extends mycurl{
 	private static $rota	 	= false;
 	private static $tipagem		= false;
 
+	// 
 	public function Bling($token, $versao = 'v1'){
 		if(!isset($token)){
 			dump('Necessário passar o Token para APi Bling.');
 			return;
-		}		
-		self::setToken($token);
-		self::setUrlAPi();
+		}
+		// Define o Token para consulta Bling
+			self::setToken($token);
+		// Define o endereço padrão para consulta
+			self::setUrlAPi();
 	}
 	private static function setToken($token){
 		// Se não passar o token retornamos uma mensagem.
@@ -28,21 +30,28 @@ class Bling extends mycurl{
 		self::$token = $token;
 	}
 	private static function setUrlApi($extraParam = false){
-		$rota = (self::$rota !== false ? self::$rota.'/' : '');
-		$exp  = ($extraParam !== false ? $extraParam : '');
-		$url  = self::$url.$rota.self::getTipagem().$exp;		
-		self::$urlAPi = $url;
+		// Se estiver uma rota já definida por algum método, já será definida na URL de consulta
+			$rota = (self::$rota !== false ? self::$rota.'/' : '');
+		// Se passado dados extras serão adicionados na URL	
+			$exp  = ($extraParam !== false ? $extraParam : '');
+		// Por fim monta a URL para consulta e salva nesta varíavel de forma didática.
+			$url  = self::$url.$rota.self::getTipagem().$exp;		
+			self::$urlAPi = $url;
 	}
 	private static function setTipagem($t){
+		//Seta a tipagem que pode ser XML ou JSON. Por isso a necessidade do método.
 		self::$tipagem = $t;
 	}
 	private static function setRota($rota){
+		// Define uma rota na url da API, pode ser /orders/, /pedidos/, /clientes/ e etc...
 		self::$rota = $rota;
 	}
 	private static function getTipagem(){
+		// Retorna a tipagem dos dados recebidos e enviados.
 		return self::$tipagem;
 	}
 	public static function getToken(){
+		// Retorna o Token solicitado pelo parâmetro
 		return static::$token;
 	}
 	public static function listaDeCompras($dataInicio = false, $dataFim = false){
@@ -71,7 +80,4 @@ class Bling extends mycurl{
 	public static function getUrlAPi(){
 		return self::$urlAPi;
 	}
-
-
-
 }

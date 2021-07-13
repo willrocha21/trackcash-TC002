@@ -7,8 +7,11 @@
 // Incluir o composer apenas para algumas ferramentas do symfony
 	include_once('../vendor/autoload.php');
 
+// Classe já preparada com métodos que facilitam a leitura e formatação das requisições.
 	require('includes/class/class.curl.php');
+// Classe da trackCash	
 	require('includes/class/class.trackCash.php');
+// Classe do Bling para garimpar os dados.	
 	require('includes/class/class.bling.php');
 
 	// Instacia a classe da trackCash
@@ -25,18 +28,28 @@
 	$fim    = '10/10/2019';
 		dump('Data Fim da consulta: '.$fim);
 
-	$listaDeComprasBling = $Bling::listaDeCompras($inicio, $fim);
+	// Solicitamos a lista de compras, passando a data desejada.
+		$listaDeComprasBling = $Bling::listaDeCompras($inicio, $fim);
+	// O retorno dos dados será um JSON, vamos transformar em array para melhor leitura
 	$listaDeComprasBling = json_decode($listaDeComprasBling)->retorno;
 	
+	// Tratamos o erro de compra não existem no período.
 	if(isset($listaDeComprasBling->erros)){
 		foreach ($listaDeComprasBling->erros as $key => $value) {
+			// Para testes aparecerá na tela, mas pode ser enviado por e-mail para o admin da empresa
 			dump('Sem compras para o período consultado de '.$inicio.' a '.$fim);
+			// Exibe o erro para depuração do desenvolvedor.
 			dump($value->erro);
 		}
 	}else{
 		dump($listaDeComprasBling);
-		$trackCash::setPedidos($listaDeComprasBling->pedidos);
-		$pedidos = $trackCash::getPedidos();
-		$insert = $trackCash::cadastrarPedidos();
-		echo $insert;
+		// Agora na classe $trackCash enviados os dados coletados do bling para formatação.
+			$trackCash::setPedidos($listaDeComprasBling->pedidos);
+		// Podemos exibir os dados formatados com o método abaixo.
+			$pedidos = $trackCash::getPedidos();
+		// Por fim dados o comando para subir os pedidos para a base.
+			$insert = $trackCash::cadastrarPedidos();
+		
+		dump('------------------ RETORNO DA INSERÇÃO NA TRACKCASH -------------------------');
+		dump(json_decode($insert));
 	}

@@ -84,8 +84,8 @@ class mycurl {
 			curl_setopt($s, CURLOPT_USERPWD, $this->auth_name.':'.$this->auth_pass);
 		}
 		if($this->_post){
-			//curl_setopt($s,CURLOPT_POST,true);
-			curl_setopt($s,CURLOPT_CUSTOMREQUEST,'PUT');
+			curl_setopt($s,CURLOPT_POST,true);
+			curl_setopt($s,CURLOPT_CUSTOMREQUEST,'POST');
 			curl_setopt($s,CURLOPT_POSTFIELDS,$this->_postFields);
 		}
 		if($this->_includeHeader){
