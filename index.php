@@ -23,9 +23,10 @@
 		$Bling = new Bling($tokenBling);
 	// Solicitamos a lista de pedidos.	
 
-	$inicio = date('01/10/2019');
+	$inicio = (isset($_GET['now']) ? date('d/m/Y', strtotime('-1 day')) : '01/10/2019');
+		
 		dump('Data Início da consulta: '.$inicio);
-	$fim    = '10/10/2019';
+	$fim    = (isset($_GET['now']) ? date('d/m/Y') : '01/10/2019');
 		dump('Data Fim da consulta: '.$fim);
 
 	// Solicitamos a lista de compras, passando a data desejada.
